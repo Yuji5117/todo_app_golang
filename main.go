@@ -1,11 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func hello() {
-	fmt.Println("Hello")
-}
+
 
 func main() {
-	hello()
+	router := gin.Default()
+	router.LoadHTMLGlob("templates/*.html")
+
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.HTML(200, "index.html", gin.H{})
+	})
+
+	router.Run()
 }
+
+
