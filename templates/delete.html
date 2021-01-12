@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+</head>
+<body>
+    <h2>Delete Confirm</h2>
+    <p>Aer you sure to delete?</p>
+    <ul>
+        <li>Content: {{ .todo.Text }}</li>
+        <li>Status: {{ .todo.Status }}</li>
+        <li>Created at: {{ .todo.CreatedAt }}</li>
+    </ul>
+
+    <form method="post" action="/delete/{{ .todo.ID }}">
+        <p><input type="submit" value="delete"></p>
+        <p><a href="/">Back</a></p>
+    </form>
+</body>
+</html>

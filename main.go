@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 
@@ -15,7 +17,7 @@ type Todo struct {
 }
 
 func dbInit() {
-	db, err := gorm.Open("sqlite3", "rest.sqlite3")
+	db, err := gorm.Open("sqlite3", "test.sqlite3")
 	if err != nil {
 		panic("failed!!!")
 	}
@@ -78,17 +80,87 @@ func dbGetOne(id int) Todo {
 	return todo
 }
 
+
+
 var getValue = func (ctx *gin.Context) {
-	data := "Hello /Go"
-	ctx.HTML(200, "index.html", gin.H{"data": data})
+	todos := dbGetAll()
+	ctx.HTML(200, "index.html", gin.H{"todos": todos})
+}
+
+var postValue = func (ctx *gin.Context) {
+	text := ctx.PostForm("text")
+	status := ctx.PostForm("status")
+	dbInsert(text, status)
+	ctx.Redirect(302, "/")
+}
+
+var getDetail = func (ctx *gin.Context) {
+	n := ctx.Param("id")
+	id, err := strconv.Atoi(n)
+	if err != nil {
+		panic(err)
+	}
+	todo := dbGetOne(id)
+	ctx.HTML(200, "detail.html", gin.H{"todo": todo})
+}
+
+var updateValue = func (ctx *gin.Context) {
+	n := ctx.Param("id")
+	id, err := strconv.Atoi(n)
+	if err != nil {
+		panic(err)
+	}
+	text := ctx.PostForm("text")
+	status := ctx.PostForm("status")
+	dbUpdate(id, text, status)
+	ctx.Redirect(302, "/")
+}
+
+var deleteConfirm = func (ctx *gin.Context) {
+	n := ctx.Param("id")
+	id, err := strconv.Atoi(n)
+	if err != nil {
+		panic(err)
+	}
+	todo := dbGetOne(id)
+	ctx.HTML(200, "delete.html", gin.H{"todo": todo})
+}
+
+var deleteValue = func (ctx *gin.Context) {
+	n := ctx.Param("id")
+	id , err := strconv.Atoi(n)
+	if err != nil {
+		panic(err)
+	}
+	dbDelete(id)
+	ctx.Redirect(302, "/")
 }
 
 func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
 
+	dbInit()
+
+	// index
 	router.GET("/", getValue)
+
+	// create
+	router.POST("/create", postValue)
+
+	// detail
+	router.GET("/detail/:id", getDetail)
+
+	// update
+	router.POST("/update/:id", updateValue)
+
+	// delete confirm
+	router.GET("/delete_confirm/:id", deleteConfirm)
+
+	// delete
+	router.POST("/delete/:id", deleteValue)
 
 	router.Run()
 }
+
 

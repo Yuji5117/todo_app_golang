@@ -6,6 +6,26 @@
     <title>Todo App</title>
 </head>
 <body>
-    <h1>{{.data}}</h1>
+    <h2>Add todo</h2>
+    <form method="post" action="/create">
+        <p>Content: <input type="text" name="text" size="40" placeholder="add todo"></p>
+        <p>Status
+            <select name="status">
+                <option value="Planning">Planning</option>
+                <option value="Doing">Doing</option>
+                <option value="Done">Done</option>
+            </select>
+        </p>
+        <p><input type="submit" value="Send"></p>
+    </form>
+
+    <ul>
+        {{ range .todos }}
+            <li>Content: {{ .Text }}, Status: {{ .Status }}
+                <label><a href="/detail/{{ .ID }}">Edit</a></label>
+                <label><a href="/delete_confirm/{{ .ID }}">Delete</a></label>
+            </li>
+        {{ end }}
+    </ul>
 </body>
 </html>
